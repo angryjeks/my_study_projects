@@ -1,8 +1,9 @@
-import requests
+#import urllib
 from time import sleep
-import urllib
-from lxml import html
+
+import requests
 from bs4 import BeautifulSoup
+from lxml import html
 
 url = "https://api.telegram.org/bot429192506:AAE95HG2J9Lf4K1Leo47iAibxoGrrcyRAPQ/"
 
@@ -10,14 +11,16 @@ flib = 'http://flibusta.is/booksearch'
 
 b_url = 'http://flibusta.is'
 
-def get_ul(text):
+Num = 5
+
+"""def get_ul(text):
     t = ''
     val_p = text.find('<ul>')
     val_l = text.find('</ul>')
     for i in range(val_p + 4, val_l):
         t += text[i]
     return t
-
+"""
 class Book:
     def __init__(self, name, author, name_u, author_u):
         self.name, self.author, self.name_u, self.author_u  = name, author, name_u, author_u
@@ -58,7 +61,9 @@ def send_mess(chat, text):
 
 def main():
     update_id = last_update(get_updates_json(url))['update_id']
+    ph_ex = True
     while True:
+        ph_url = ""
         last_upd = last_update(get_updates_json(url))
         if update_id == last_upd['update_id']:
             chat_id = get_chat_id(last_upd)
@@ -69,10 +74,17 @@ def main():
                 tree = html.fromstring(resp.text)
                 #xpath = tree.xpath('//div[@id="main"]/ul')
                 #ul = xpath[0].xpath('li/a/@href')
-                lis = ['1' , '2', '3', '4', '5']
                 bookshelf = []
-                t1 = tree.xpath('//div[@id="main"]/h3[contains(text(), "Найденные книги")]/following-sibling::ul[1]')[0]
                 mess = ""
+                lis = []
+                num = Num
+                try:
+                    t1 = tree.xpath('//div[@id="main"]/h3[contains(text(), "Найденные книги")]/following-sibling::ul[1]')[0]
+                except IndexError:
+                    mess += "Книг не найдено."
+                    num -= 5
+                for i in range(1,num+1):
+                    lis.append(str(i))
                 for i in lis:
                     try:
                         book = Book("".join(t1.xpath('li['+i+']/a[1]//text()')),
@@ -104,20 +116,16 @@ def main():
                         except IndexError:
                             xp1 = "Аннотации нет."
                         mess += "\n" + "Аннотация:\n" + xp1
-                        ph_url = b_url + tree.xpath('//img[@alt="Cover image"]/@src')[0]
+                        
+                        try:
+                            ph_url = b_url + tree.xpath('//img[@alt="Cover image"]/@src')[0]
+                        except IndexError:
+                            ph_url = ""
                     mess += "\n------------------------"
-                    #print(mess)
-                    #send_mess(chat_id, mess)
                     print(i)
-                #send_mess(chat_id, mess)
-                #xpath = [b_url + i for i in xpath]
-                #a = "<a href = \"" + xpath[0] + "\">" + "pip" + "</a>"
-                #print(ul)
-                #print(resp.text)
-            #send_mess(chat_id, bookshelf[0].printb())
-            #print(111111111)
-            print(ph_url)
+            #print(ph_url)
             send_mess(chat_id, mess)
+            
             send_photo(chat_id, ph_url)
             update_id +=1
     sleep(1)
