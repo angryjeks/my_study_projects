@@ -99,17 +99,24 @@ def main():
 
                     resp = s.get(book.getNameU())
                     tree = html.fromstring(resp.text)
-                    j = 1
-                    xpath = b_url + tree.xpath('//p[@class="genre"]/following-sibling::a['+str(j)+']/@href')[0]
-                    x = tree.xpath('//p[@class="genre"]/following-sibling::a['+str(j)+']//text()')[0]
+                    j = 0
+                    path = tree.xpath('//div[@id="main"]//a') 
+                    x = path[0].xpath('text()')[0]
+                    #print(x)
                     while x[0] != "(":
-                        j += 1
-                        x = tree.xpath('//p[@class="genre"]/following-sibling::a['+str(j)+']//text()')[0]
-                        #xpath = b_url + tree.xpath('//p[@class="genre"]/following-sibling::a['+str(j)+']/@href')[0]
+                        j +=1
+                        try:
+                            x = path[j].xpath('text()')[0]
+                        except IndexError:
+                            continue
+                        #x = apath
+                        xpath = b_url + path[j].xpath('@href')[0]
+                        #print(x)
                     if x == "(читать)":
-                        x = tree.xpath('//p[@class="genre"]/following-sibling::a['+str(j+1)+']//text()')[0]
-                        xpath = b_url + tree.xpath('//p[@class="genre"]/following-sibling::a['+str(j+1)+']/@href')[0]
+                        x = path[j+1].xpath('text()')[0]
+                        xpath = b_url + path[j+1].xpath('@href')[0]
                     mess += "\n" + book.printb() + "\nСкачать в формате <a href=\"" +xpath + "\">" + x + "</a>"
+                   
                     if i == '1':
                         try:
                             xp1 = tree.xpath('//h2[contains(text(), "Аннотация")]/following-sibling::p[1]/text()')[0]
