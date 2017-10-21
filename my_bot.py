@@ -99,9 +99,9 @@ def main():
 
                     resp = s.get(book.getNameU())
                     tree = html.fromstring(resp.text)
-                    j = 0
+                    j = 30
                     path = tree.xpath('//div[@id="main"]//a') 
-                    x = path[0].xpath('text()')[0]
+                    x = path[30].xpath('text()')[0]
                     #print(x)
                     while x[0] != "(":
                         j +=1
