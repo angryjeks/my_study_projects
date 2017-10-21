@@ -7,7 +7,7 @@ import seaborn
 import scipy
 import numpy as np
 
-EPS = 10**(-5)
+EPS = 10**(-6)
 q1 = 0.388453
 q2 = 0.36269
 n_si = 14

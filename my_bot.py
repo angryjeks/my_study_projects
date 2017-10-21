@@ -129,7 +129,7 @@ def main():
                         except IndexError:
                             ph_url = ""
                     mess += "\n------------------------"
-                    print(i)
+                    #print(i)
             #print(ph_url)
             send_mess(chat_id, mess)
             
